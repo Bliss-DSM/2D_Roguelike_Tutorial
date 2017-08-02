@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Enemy : MovingObject
 {
@@ -14,10 +11,15 @@ public class Enemy : MovingObject
     private Transform target;
     // Enemy가 두 턴 당 한 번씩 이동하도록 함
     private bool skipMove;
+    // 플레이어를 공격할 때 재생되는 효과음
+    public AudioClip enemyAttack1;
+    public AudioClip enemyAttack2;
 
     // MovingObject의 Start 재정의
     protected override void Start()
     {
+        // Enemy를 GameManager의 enemies List에 추가
+        GameManager.instance.AddEnemyToList(this);
         // Animator 컴포넌트 할당
         animator = GetComponent<Animator>();
         // target 변수에 Player의 위치 저장
@@ -80,7 +82,7 @@ public class Enemy : MovingObject
             else
             {
                 // 왼쪽 방향으로 움직이도록 설정
-                yDir = -1;
+                xDir = -1;
             }
         }
 
@@ -94,6 +96,10 @@ public class Enemy : MovingObject
         // 부딪힌 Player을 hitPlayer에 대입
         Player hitPlayer = component as Player;
 
+        // Enemy의 애니메이션 상태를 enemyAttack으로 변경
+        animator.SetTrigger("enemyAttack");
+        // enemyAttack 재생
+        SoundManager.instance.RandomizeSfx(enemyAttack1, enemyAttack2);
         // Player의 LoseFood 메서드 호출
         hitPlayer.LoseFood(playerDamage);
     }

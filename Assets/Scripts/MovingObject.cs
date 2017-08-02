@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class MovingObject : MonoBehaviour
@@ -12,7 +11,7 @@ public abstract class MovingObject : MonoBehaviour
     // BoxCollider2D 컴포넌트를 할당할 변수
     private BoxCollider2D boxColider;
     // Rigidbody2D 컴포넌트를 할당할 변수
-    private Rigidbody2D rb2d;
+    private Rigidbody2D rb2D;
     // moveTime의 역수를 저장할 변수
     // 나누기 대신 비교적 효율적인 곱하기 연산을 할 수 있게 해 줌
     private float inverseMoveTime;
@@ -23,7 +22,7 @@ public abstract class MovingObject : MonoBehaviour
         // BoxColider2D 컴포넌트 할당
         boxColider = GetComponent<BoxCollider2D>();
         // Rigidbody2D 컴포넌트 할당
-        rb2d = GetComponent<Rigidbody2D>();
+        rb2D = GetComponent<Rigidbody2D>();
         // moveTime의 역수를 대입
         inverseMoveTime = 1f / moveTime;
     }
@@ -41,6 +40,8 @@ public abstract class MovingObject : MonoBehaviour
         boxColider.enabled = false;
         // start에서 end로 Ray를 보냈을 때 blockingLayer에 부딪힌 위치를 hit에 저장
         hit = Physics2D.Linecast(start, end, blockingLayer);
+        // 다시 BoxColider2D 컴포넌트 활성화
+        boxColider.enabled = true;
 
         // 부딪히지 않았다면
         if(hit.transform == null)
@@ -66,7 +67,10 @@ public abstract class MovingObject : MonoBehaviour
         bool canMove = Move(xDir, yDir, out hit);
 
         // Move 메서드에서 hit이 부딪히지 않았다면 메서드 종료
-        if (hit.transform == null) return;
+        if (hit.transform == null)
+        {
+            return;
+        }
 
         // hit과 부딪힌 Object를 hitComponent에 할당
         T hitComponent = hit.transform.GetComponent<T>();
@@ -89,9 +93,9 @@ public abstract class MovingObject : MonoBehaviour
         while(sqrRemainingDistance > float.Epsilon)
         {
             // 현재 Object의 위치에서 도착점의 방향으로 inverseMoveTime * Time.deltaTime만큼 이동한 거리를 newPosition에 대입
-            Vector3 newPosition = Vector3.MoveTowards(rb2d.position, end, inverseMoveTime * Time.deltaTime);
+            Vector3 newPosition = Vector3.MoveTowards(rb2D.position, end, inverseMoveTime * Time.deltaTime);
             // Object를 newPosition으로 이동
-            rb2d.MovePosition(newPosition);
+            rb2D.MovePosition(newPosition);
             // 남은 거리의 제곱을 다시 계산
             sqrRemainingDistance = (transform.position - end).sqrMagnitude;
             // 루프를 갱신하기 전에 다음 프레임을 기다림
